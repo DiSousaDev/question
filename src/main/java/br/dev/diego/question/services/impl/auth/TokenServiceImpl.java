@@ -3,6 +3,7 @@ package br.dev.diego.question.services.impl.auth;
 
 import br.dev.diego.question.entities.User;
 import br.dev.diego.question.records.login.TokenInfo;
+import br.dev.diego.question.records.login.TokenResponse;
 import br.dev.diego.question.services.TokenService;
 import br.dev.diego.question.services.exceptions.TokenGenerationException;
 import br.dev.diego.question.services.exceptions.TokenVerifyException;
@@ -33,15 +34,15 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenInfo gerarToken(User user) {
+    public TokenResponse gerarToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            return new TokenInfo(JWT.create()
+            return new TokenResponse(JWT.create()
                     .withIssuer(issuer)
                     .withSubject(user.getUsername())
                     .withClaim("id", user.getId())
                     .withExpiresAt(getExpirationTime())
-                    .sign(algorithm));
+                    .sign(algorithm), getExpirationTime());
         } catch (JWTCreationException e) {
             throw new TokenGenerationException("Erro ao gerar token JWT, " + e.getMessage());
         }
